@@ -7,19 +7,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="CSS/Login.css">
     <title>LoginSite</title>
+
 </head>
 
 <body>
     <!--===========================================================
                         Login
     ============================================================-->
+    <div id="LoginContainer" class="Mode">
+        <h1>Login</h1>
+        <button id="SWRegister" onclick="ToggleMode()">Registrieren</button>
+    </div>
 
     <!--===========================================================
                         Register
     ============================================================-->
-    
-    <script src="JS/FunctionsLogin.js"></script>
-    <script></script>
+    <div id="RegisterContainer" class="NotActive Mode">
+        <h1>Registrieren</h1>
+        <button id="SWLogin" onclick="ToggleMode()">Login</button>
+    </div>
+
+    <script type="module">
+        import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+        const supabaseUrl = "https://fegblwtlqmfveokachsj.supabase.co";
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlZ2Jsd3RscW1mdmVva2FjaHNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM0NDUxNTEsImV4cCI6MjA1OTAyMTE1MX0.3qQExjnnauc_IzP8Jyi2OZPoSjxndRrP7SxXvnQ9kjY";
+        const supabase = createClient(supabaseUrl, supabaseKey);
+
+        console.log("Supabase erfolgreich verbunden!", supabase);
+
+        async function LoadPassword(User) {
+	        const { data, error } = await supabase
+		    .from('UsersNotAccepted') //Datenbank
+		    .select('Password') //Passwordzeile auswälen
+            .ilike('Benutzername', User)  // Nur Zeilen mit Username durchsuchen
+            .maybeSingle();
+		        if (error) {
+	                console.error("Fehler beim Filtern:", error.message);
+		        }
+                console.log("Daten erhalten:", data); 
+		        return data ? data.Password : null;
+        }
+        async function InitPassword() {
+            let Benutzername = "julian";
+        let Passwort = await LoadPassword(Benutzername);
+        console.log("Passwort: ", Passwort);
+        }
+        InitPassword();
+    </script>
+    <script>
+        function ToggleMode() {
+            document.getElementById("LoginContainer").classList.toggle("NotActive");
+            document.getElementById("RegisterContainer").classList.toggle("NotActive");
+        }
+    </script>
 </body>
 
 </html>
